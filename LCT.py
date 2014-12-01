@@ -13,7 +13,7 @@ from urllib.request import urlretrieve as DownLoad
 try:
 	from gi.repository import Gtk, Gdk, GObject
 except:
-	print("PyGI is not available. Please install.\n Or run LCT with a path to a logfile as an argument to run GUIless.")
+	logging.critical("CRITICAL: PyGI is not available. Please install.\n")
 
 class Parser(Thread):
 	def GetYOUName(self, name):
