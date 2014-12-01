@@ -11,7 +11,7 @@ LCT.py can be placed and run from anywhere, it will place its extra files in ~/L
 
 You point it at the right directory (Server name) that contains the log files.
 When you click start it will open the logfile that has been most recently modifyed
-and scan through it to the end to find your current zone. (Witch has no function at all atm.)
+and scan through it to the end to find your current zone. (Witch has no function at all atm. And can take a very long time if your log file is large. So I advice to delete/move them every now and then.)
 It will place a small icon in the "tray" that will be white when its not parsing any file at all.
 Green when it's parsing but no fight is going on with selected people. And Red when a fight is in progress.
 
