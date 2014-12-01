@@ -71,7 +71,7 @@ class Parser(Thread):
 	
 	def StopDPS(self):
 		time = int(self.StopFightTime) - int(self.StartFightTime)
-		logging.info("Stoping Fight Parse after 6 second idle")
+		logging.info("Stopping Fight Parse after 6 second idle")
 		clipboardtext = ""
 		sortdict = OrderedDict(sorted(self.TotalPlayerDamage.items(), key=lambda t: t[1],  reverse=True))
 		for player in sortdict:
@@ -113,7 +113,7 @@ class Parser(Thread):
 					self.StopDPS()
 					return
 				else:
-					print("sleeping...")
+					print("Sleeping...")
 					stoptimer += 1
 					sleep(1.0)
 			elif self.checkforunixtime.search(line):
@@ -138,7 +138,7 @@ class Parser(Thread):
 				elif words.count('fails'):
 					logging.info("Miss!")
 				elif self.GetYOUName(words[0]) in self.TotalPlayerDamage and words[1] == 'are' and words[2] == 'hit':
-					logging.info("Enviromental damage on: "+self.GetYOUName(words[0]))
+					logging.info("Environmental damage on: "+self.GetYOUName(words[0]))
 				# Autoattacks
 				elif self.GetYOUName(words[0]) in self.TotalPlayerDamage and words[-1] == 'damage.\n':
 					logging.info(words[0]+ " did something:")
@@ -227,11 +227,11 @@ class Parser(Thread):
 		self.Triggers = dict({})
 		#Scan Logfile for Current zone aswell as ittirate it to EOF.
 		self.CurrentZone = self.ScanLogFile()
-		logging.info("Scan Logfile compleat. Current zone: "+self.CurrentZone)
+		logging.info("Scan Logfile complete. Current zone: "+self.CurrentZone)
 		
 		
 	def stop(self):
-		logging.info("Stoping Parser")
+		logging.info("Stopping Parser")
 		self.stoprequest.set()
 		self.alive = False
 		self.join()
@@ -299,7 +299,7 @@ class Parser(Thread):
 					self.StartFightTime = self.timestamp
 					self.ParseDPS()
 				elif self.GetYOUName(words[0]) in self.TotalPlayerDamage and words[1] == 'are' and words[2] == 'hit':
-					logging.info("Enviromental damage on: "+self.GetYOUName(words[0]))
+					logging.info("Environmental damage on: "+self.GetYOUName(words[0]))
 				# Autoattacks
 				elif self.GetYOUName(words[0]) in self.TotalPlayerDamage and words[-1] == 'damage.\n':
 					logging.info(words[0]+ " it was a autoattack.")
@@ -433,7 +433,7 @@ class LCTWindow(Gtk.Window):
 		self.runButton.connect("clicked", self.toggle_parser)
 		self.VBox.pack_start(self.runButton, True, True, 0)
 		self.Statusbar = Gtk.ProgressBar()
-		self.Statusbar.set_text("Pleas select a log file directory.")
+		self.Statusbar.set_text("Please select a log file directory.")
 		self.Statusbar.set_show_text(True)
 		self.Statusbar.set_pulse_step(0.01)
 		self.VBox.pack_start(self.Statusbar, True, True, 0)
@@ -453,7 +453,7 @@ class LCTWindow(Gtk.Window):
 	
 	def toggle_parser(self, widget):
 		if (self.parserrunning):
-			self.Statusbar.set_text("Stopping parser..")
+			self.Statusbar.set_text("Stopping parser...")
 			Gtk.main_iteration()
 			self.parser_thread.stop()
 			self.parserrunning = False
@@ -466,13 +466,13 @@ class LCTWindow(Gtk.Window):
 			
 			self.runButton.set_label("Start Parser!")
 		else:
-			self.Statusbar.set_text("Scanning log file, please wait..")
+			self.Statusbar.set_text("Scanning log file, please wait...")
 			Gtk.main_iteration()
 			self.parser_thread = Parser(self.LogFolder, self.CopyToClipBoard, self.Statusbar, self.StatusIcon)
 			self.parser_thread.name = 0
 			self.parser_thread.start()
 			self.parserrunning = True
-			self.Statusbar.set_text("Parser is running..")
+			self.Statusbar.set_text("Parser is running...")
 			self.Statusbar.set_fraction(1.0)
 			self.runButton.set_label("Stop Parser!")
 			
@@ -491,7 +491,7 @@ class LCTWindow(Gtk.Window):
 			self.LogFolder = dialog.get_filename()
 			self.SaveSettings()
 			self.LogLable.set_text(self.GetServer())
-			self.Statusbar.set_text("Logdirectory set!")
+			self.Statusbar.set_text("Log directory set!")
 		elif response == Gtk.ResponseType.CANCEL:
 			logging.info("Cancel clicked")
 		
