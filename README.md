@@ -8,6 +8,7 @@ That only parses DPS and has support for auido triggers.
 You need espeek for the text-to-speek to use triggers.
 
 LCT.py can be placed and run from anywhere, it will place its extra files in ~/LCT/
+LCT downloads it's Tray icons from my server. If you fork LCT please have your version not do this.
 
 You point it at the right directory (Server name) that contains the log files.
 When you click start it will open the logfile that has been most recently modifyed
