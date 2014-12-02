@@ -7,7 +7,7 @@ A very simple log parser for EverQuest 2
 That only parses DPS and has support for auido triggers.
 You need espeek for the text-to-speek to use triggers.
 
-LCT.py can be placed and run from anywhere, it will place its extra files in ~/LCT/
+LCT.py can be placed and run from anywhere, it will place its extra files in ~/.LCT/
 (except for LCT.log witch is placed in your home directory)
 
 LCT downloads it's Tray icons from my server. If you fork LCT please have your version not do this.
