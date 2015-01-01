@@ -1,7 +1,12 @@
 #! /usr/bin/env python3
 # LCT2
 import sys, re, os, string, logging
-logging.basicConfig(filename=os.path.expanduser('~/LCT.log'),level=logging.DEBUG)
+try:
+	os.chdir(os.path.expanduser("~/.LCT"))
+except:
+	os.makedirs(os.path.expanduser("~/.LCT"))
+	os.chdir(os.path.expanduser("~/.LCT"))
+logging.basicConfig(filename=os.path.expanduser('~/.LCT/LCT.log'),level=logging.DEBUG)
 from time import sleep
 from collections import OrderedDict
 from threading import Thread, Event
@@ -117,9 +122,12 @@ class Parser(Thread):
 					stoptimer += 1
 					sleep(1.0)
 			elif self.checkforunixtime.search(line):
-				if self.checkforweakness.search(line):
-					os.system('espeak \"weakness\"')
-					logging.info(str(line))
+				# Triggers
+				for t in self.triggers:
+					if self.triggers[t].search(line):
+						os.system('espeak \"'+self.trigger_actions[t]+'\"')
+						logging.info("Triggered on: "+str(line))
+						return
 				self.timestamp = self.checkforunixtime.findall(line)[0].replace('(',  '').replace(')',  '')
 				splited = self.checkforunixtime.split(line)
 				splited2 = self.checkfortimestamp.split(splited[1])
@@ -183,7 +191,7 @@ class Parser(Thread):
 		retstring.rstrip()
 		return retstring
 	
-	def __init__(self,  path, ctc, statusbar, statusicon):
+	def __init__(self,  path, ctc, statusbar, statusicon, triggers, trigger_actions):
 		Thread.__init__(self)
 		
 		#CheckFiles test
@@ -220,7 +228,11 @@ class Parser(Thread):
 		logging.info("Compiling regex programs")
 		self.checkforunixtime = re.compile("^[(]\d{10}[)]")
 		self.checkfortimestamp = re.compile("^[[].+\d{4}[]]\s")
-		self.checkforweakness = re.compile(r"FF9900You can see a weakness in your enemy*")
+		self.triggers = triggers
+		self.trigger_actions = trigger_actions
+		
+		# Obsolite
+		#self.checkforweakness = re.compile(r"FF9900You can see a weakness in your enemy*")
 		
 		#Dictionarys
 		self.TotalPlayerDamage = dict({'Group': 0,  self.YOU: 0})
@@ -411,6 +423,8 @@ class LCTWindow(Gtk.Window):
 	def __init__(self):
 		self.parserrunning = False
 		self.LogFolder = ""
+		self.Triggers = {}
+		self.Trigger_Actions = {}
 		self.settings = ElementTree()
 		self.LoadSettings()
 		Gtk.Window.__init__(self, title="Lazy Combat Tracker")
@@ -468,7 +482,7 @@ class LCTWindow(Gtk.Window):
 		else:
 			self.Statusbar.set_text("Scanning log file, please wait...")
 			Gtk.main_iteration()
-			self.parser_thread = Parser(self.LogFolder, self.CopyToClipBoard, self.Statusbar, self.StatusIcon)
+			self.parser_thread = Parser(self.LogFolder, self.CopyToClipBoard, self.Statusbar, self.StatusIcon, self.Triggers, self.Trigger_Actions)
 			self.parser_thread.name = 0
 			self.parser_thread.start()
 			self.parserrunning = True
@@ -504,15 +518,15 @@ class LCTWindow(Gtk.Window):
 	
 	def LoadSettings(self):
 		try:
-			os.chdir(os.path.expanduser("~/.LCT"))
-		except:
-			os.makedirs(os.path.expanduser("~/.LCT"))
-			os.chdir(os.path.expanduser("~/.LCT"))
-		try:
 			self.settings.parse(os.path.expanduser("~/.LCT/Settings.xml"))
 		except:
 			file = open(os.path.expanduser("~/.LCT/Settings.xml"), 'w+')
-			file.write('<LCT><LOGFOLDER></LOGFOLDER></LCT>')
+			file.write('''<LCT>
+	<LOGFOLDER></LOGFOLDER>
+	<TRIGGERS>
+		<TRIGGER speak="Weakness">FF9900You can see a weakness in your enemy*</TRIGGER>
+	</TRIGGERS>
+</LCT>''')
 			file.close()
 			self.settings.parse(os.path.expanduser("~/.LCT/Settings.xml"))
 		
@@ -527,6 +541,12 @@ class LCTWindow(Gtk.Window):
 			DownLoad("http://www.lejoni.com/lct/LCT-fighting.png", "LCT-fighting.png")
 		
 		self.LogFolder = self.settings.findtext("LOGFOLDER")
+		n = 0
+		for trigger in self.settings.iter('TRIGGER'):
+			self.Triggers[n] = re.compile(trigger.text)
+			self.Trigger_Actions[n] = trigger.get('speak')
+			logging.info("TRIGGER Added: "+str(self.Triggers)+" With action: "+str(self.Trigger_Actions))
+			n = n+1
 		
 	
 	def SaveSettings(self):
