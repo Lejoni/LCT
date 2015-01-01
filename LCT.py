@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-
+# LCT2
 import sys, re, os, string, logging
 logging.basicConfig(filename=os.path.expanduser('~/LCT.log'),level=logging.DEBUG)
 from time import sleep
